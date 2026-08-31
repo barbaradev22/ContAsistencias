@@ -31,7 +31,7 @@ namespace ContAsistencias.Pages.Asistencias
                 return RedirectToPage("/Login");
 
             await _helperAsistencia.EliminarAsistencia(id);
-            return RedirectToPage("/VistaAsistencia");
+            return RedirectToPage("/Asistencias/VistaAsistencia");
         }
     }
 }
