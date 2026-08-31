@@ -2,3 +2,55 @@
 @model ContAsistencias.Pages.Asistencias.EditarAsistenciaModel
 @{
 }
+
+<div class="row" style="margin-top: 40px;">
+    <div class="col s12 m6 offset-m3">
+        <div class="card-panel">
+            <h4 class="center-align">Editar Asistencia</h4>
+
+            <form method="post">
+                <input type="hidden" name="txtId" value="@Model.AsistenciaEditar?.IdAsistencia" />
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">person</i>
+                        <input id="idUsuario" name="txtIdUsuario" type="number" value="@Model.AsistenciaEditar?.IdUsuario" readonly required>
+                        <label for="idUsuario" class="active">ID Usuario</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">event</i>
+                        <input id="fecha" name="txtFecha" type="date" value="@Model.AsistenciaEditar?.Fecha.ToString("yyyy-MM-dd")" required>
+                        <label for="fecha" class="active">Fecha</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">schedule</i>
+                        <input id="hora" name="txtHora" type="time" value="@Model.AsistenciaEditar?.Hora.ToString("HH\\:mm\\:ss")" required>
+                        <label for="hora" class="active">Hora</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">check_circle</i>
+                        <select name="txtTipo" class="browser-default" required>
+                            <option value="entrada" selected="@(Model.AsistenciaEditar?.Tipo == "entrada")">Entrada</option>
+                            <option value="salida" selected="@(Model.AsistenciaEditar?.Tipo == "salida")">Salida</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row center-align" style="margin-top: 20px;">
+                    <button type="submit" class="btn waves-effect waves-light blue">Actualizar</button>
+                    <a asp-page="/Asistencias/VistaAsistencia" class="btn waves-effect waves-light grey">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

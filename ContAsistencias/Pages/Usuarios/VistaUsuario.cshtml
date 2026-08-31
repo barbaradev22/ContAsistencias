@@ -11,7 +11,7 @@
                     <h4>Gestión de Usuarios</h4>
                 </div>
                 <div class="col s4 right-align" style="margin-top: 15px;">
-                    <a asp-page="/CrearUsuario" class="btn waves-effect waves-light teal lighten-2">
+                    <a asp-page="/Usuarios/CrearUsuario" class="btn waves-effect waves-light teal lighten-2">
                         <i class="material-icons left">add</i>Nuevo Usuario
                     </a>
                 </div>
@@ -36,10 +36,10 @@
                             <td>@u.Correo</td>
                             <td><span class="new badge teal" data-badge-caption="">@u.Rol</span></td>
                             <td class="center-align">
-                                <a asp-page="/EditarUsuario" asp-route-id="@u.IdUsuario" class="btn-small blue waves-effect waves-light">
+                                <a asp-page="/Usuarios/EditarUsuario" asp-route-id="@u.IdUsuario" class="btn-small blue waves-effect waves-light">
                                     <i class="material-icons">edit</i>
                                 </a>
-                                <a asp-page-handler="Eliminar" asp-route-id="@u.IdUsuario" class="btn-small red waves-effect waves-light" onclick="return confirm('¿Eliminar usuario?');">
+                                <a asp-page="/Usuarios/VistaUsuario" asp-page-handler="Eliminar" asp-route-id="@u.IdUsuario" class="btn-small red waves-effect waves-light" onclick="return confirm('¿Eliminar usuario?');">
                                     <i class="material-icons">delete</i>
                                 </a>
                             </td>
