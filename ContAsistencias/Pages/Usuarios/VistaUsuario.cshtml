@@ -3,4 +3,50 @@
 @{
 }
 
-<h1>Detalles del Usuario</h1>
+<div class="row" style="margin-top: 30px;">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row" style="margin-bottom: 0;">
+                <div class="col s8">
+                    <h4>Gestión de Usuarios</h4>
+                </div>
+                <div class="col s4 right-align" style="margin-top: 15px;">
+                    <a asp-page="/CrearUsuario" class="btn waves-effect waves-light teal lighten-2">
+                        <i class="material-icons left">add</i>Nuevo Usuario
+                    </a>
+                </div>
+            </div>
+
+            <table class="striped responsive-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th class="center-align">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model.ListaUsuarios)
+                    {
+                        <tr>
+                            <td>@u.IdUsuario</td>
+                            <td>@u.Nombre</td>
+                            <td>@u.Correo</td>
+                            <td><span class="new badge teal" data-badge-caption="">@u.Rol</span></td>
+                            <td class="center-align">
+                                <a asp-page="/EditarUsuario" asp-route-id="@u.IdUsuario" class="btn-small blue waves-effect waves-light">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                                <a asp-page-handler="Eliminar" asp-route-id="@u.IdUsuario" class="btn-small red waves-effect waves-light" onclick="return confirm('¿Eliminar usuario?');">
+                                    <i class="material-icons">delete</i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

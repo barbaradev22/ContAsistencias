@@ -170,5 +170,46 @@ namespace ContAsistencias.data
             }
             return idsConAsistencia;
         }
+
+        public async Task<List<Asistencia>> ObtenerTodasLasAsistencias()
+        {
+            var asistencias = new List<Asistencia>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "SELECT id_asistencia, id_usuario, fecha_asistencia, hora_asistencia, tipo_asistencia FROM asistencias ORDER BY fecha_asistencia DESC";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            int ordIdAsistencia = reader.GetOrdinal("id_asistencia");
+                            int ordIdUsuario = reader.GetOrdinal("id_usuario");
+                            int ordFecha = reader.GetOrdinal("fecha_asistencia");
+                            int ordHora = reader.GetOrdinal("hora_asistencia");
+                            int ordTipo = reader.GetOrdinal("tipo_asistencia");
+
+                            asistencias.Add(new Asistencia
+                            {
+                                IdAsistencia = reader.GetInt32(ordIdAsistencia),
+                                IdUsuario = reader.GetInt32(ordIdUsuario),
+                                Fecha = reader.GetDateTime(ordFecha).Date,
+
+                                // Asignación directa a TimeSpan con validación de nulos
+                                Hora = !reader.IsDBNull(ordHora)
+                                       ? reader.GetTimeSpan(ordHora)
+                                       : TimeSpan.Zero,
+
+                                Tipo = !reader.IsDBNull(ordTipo)
+                                       ? reader.GetString(ordTipo)
+                                       : string.Empty
+                            });
+                        }
+                    }
+                }
+            }
+            return asistencias;
+        }
     }
 }

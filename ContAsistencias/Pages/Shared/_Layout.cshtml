@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,43 +8,71 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ContAsistencias.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">ContAsistencias</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+    <nav class="navbar-custom z-depth-1 grey darken-1">
+        <div class="nav-wrapper container">
+            <!-- Logo del Sistema -->
+            <a asp-page="/Index" class="brand-logo left flex-logo">
+                <i class="material-icons logo-icon">access_time</i>
+                <span class="logo-text">Control Asistencia</span>
+            </a>
+
+            <!-- Enlaces principales del sistema -->
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li>
+                    <a asp-page="/Index" class="nav-link">
+                        <i class="material-icons left">check_circle</i>Marcar Asistencia
+                    </a>
+                </li>
+
+                <!-- Dropdown para Reportes (RE-01, RE-02, RE-03) -->
+                <li>
+                    <a class="dropdown-trigger nav-link" href="#!" data-target="dropdown-reportes">
+                        <i class="material-icons left">assessment</i>Reportes
+                        <i class="material-icons right">arrow_drop_down</i>
+                    </a>
+                </li>
+
+                <!-- Gestión de Usuarios (GU-01, GU-02, GU-03) -->
+                <li>
+                    <a asp-page="/Usuarios/Index" class="nav-link">
+                        <i class="material-icons left">people</i>Gestión Usuarios
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Estructura del Dropdown para los Reportes del Administrador -->
+    <ul id="dropdown-reportes" class="dropdown-content">
+        <li>
+            <a asp-page="/Reportes/Atrasos">
+                <i class="material-icons">alarm_on</i>Atrasos (> 9:30 AM)
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Reportes/SalidasAnticipadas">
+                <i class="material-icons">alarm_off</i>Salidas Anticipadas (< 17:30 PM)
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a asp-page="/Reportes/Inasistencias">
+                <i class="material-icons">person_off</i>Inasistencias
+            </a>
+        </li>
+    </ul>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ContAsistencias - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)

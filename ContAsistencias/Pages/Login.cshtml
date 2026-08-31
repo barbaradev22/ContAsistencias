@@ -1,4 +1,48 @@
 ﻿@page
-@model ContAsistencias.Pages.LoginModel
+@model ContAsistencias.Pages.loginModel
 @{
+    ViewData["Title"] = "Iniciar Sesión";
 }
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col s12 m4 offset-m4">
+        <div class="card-panel">
+            <h4 class="center-align">Iniciar Sesión</h4>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="card-panel red lighten-4 red-text text-darken-4 z-depth-1" style="padding: 15px; margin-bottom: 25px; border-radius: 8px; display: flex; align-items: center;">
+                    <i class="material-icons left" style="margin-right: 15px; font-size: 2rem;">error</i>
+                    <div>
+                        <b style="font-size: 1.1rem;">¡Ups! Algo salió mal:</b>
+                        <div asp-validation-summary="All" class="red-text text-darken-4" style="margin-top: 5px;"></div>
+                    </div>
+                </div>
+            }
+
+            <form method="post" asp-page="/Login">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">email</i>
+                        <input id="email" name="txtCorreo" type="email" class="validate" required>
+                        <label for="email">Correo Electrónico</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">lock</i>
+                        <input id="password" name="txtContrasena" type="password" class="validate" required>
+                        <label for="password">Contraseña</label>
+                    </div>
+                </div>
+
+                <div class="row center-align">
+                    <button type="submit" class="waves-effect waves-light btn teal lighten-2 w-100">
+                        Iniciar Sesión
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
