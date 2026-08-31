@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 
+builder.Services.AddTransient<dhelperAsistencias>();
 builder.Services.AddScoped<dhelperUsuario>();
 
 builder.Services.AddSession(options =>
