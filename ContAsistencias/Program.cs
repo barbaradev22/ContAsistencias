@@ -6,7 +6,6 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddTransient<dhelperAsistencias>();
 builder.Services.AddScoped<dhelperUsuario>();
-builder.Services.AddScoped<dhelperAsistencias>();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
