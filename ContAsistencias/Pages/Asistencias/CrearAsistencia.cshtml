@@ -2,3 +2,59 @@
 @model ContAsistencias.Pages.Asistencias.CrearAsistenciaModel
 @{
 }
+
+<div class="row" style="margin-top: 40px;">
+    <div class="col s12 m6 offset-m3">
+        <div class="card-panel">
+            <h4 class="center-align">Nueva Asistencia</h4>
+
+            <form method="post">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">person</i>
+                        <select name="txtIdUsuario" class="browser-default" required>
+                            <option value="" disabled selected>Selecciona un empleado</option>
+                            @foreach (var usuario in Model.ListaUsuarios)
+                            {
+                                <option value="@usuario.IdUsuario">@usuario.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">event</i>
+                        <input id="fecha" name="txtFecha" type="date" required>
+                        <label for="fecha">Fecha</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">schedule</i>
+                        <input id="hora" name="txtHora" type="time" required>
+                        <label for="hora">Hora</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">check_circle</i>
+                        <select name="txtTipo" class="browser-default" required>
+                            <option value="" disabled selected>Selecciona tipo de asistencia</option>
+                            <option value="entrada">Entrada</option>
+                            <option value="salida">Salida</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row center-align" style="margin-top: 20px;">
+                    <button type="submit" class="btn waves-effect waves-light teal lighten-2">Guardar</button>
+                    <a asp-page="/Asistencias/VistaAsistencia" class="btn waves-effect waves-light grey">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

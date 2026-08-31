@@ -2,3 +2,53 @@
 @model ContAsistencias.Pages.Usuarios.EditarUsuarioModel
 @{
 }
+<div class="row" style="margin-top: 40px;">
+    <div class="col s12 m6 offset-m3">
+        <div class="card-panel">
+            <h4 class="center-align">Editar Usuario</h4>
+
+            <form method="post">
+                <input type="hidden" name="txtId" value="@Model.UsuarioEditar?.IdUsuario" />
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">person</i>
+                        <input id="nombre" name="txtNombre" type="text" value="@Model.UsuarioEditar?.Nombre" required>
+                        <label for="nombre" class="active">Nombre Completo</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">email</i>
+                        <input id="correo" name="txtCorreo" type="email" value="@Model.UsuarioEditar?.Correo" required>
+                        <label for="correo" class="active">Correo Electrónico</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">lock</i>
+                        <input id="password" name="txtPassword" type="text" value="@Model.UsuarioEditar?.Password" required>
+                        <label for="password" class="active">Contraseña</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">assignment_ind</i>
+                        <select name="txtRol" class="browser-default" required>
+                            <option value="Empleado" selected="@(Model.UsuarioEditar?.Rol == "Empleado")">Empleado</option>
+                            <option value="Admin" selected="@(Model.UsuarioEditar?.Rol == "Admin")">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row center-align" style="margin-top: 20px;">
+                    <button type="submit" class="btn waves-effect waves-light blue">Actualizar</button>
+                    <a asp-page="/VistaUsuarios" class="btn waves-effect waves-light grey">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

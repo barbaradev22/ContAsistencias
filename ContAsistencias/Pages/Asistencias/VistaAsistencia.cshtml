@@ -3,4 +3,63 @@
 @{
 }
 
-<h1> weko el que lee JAJAJJA bye, si imaginate el boton de volver dhdhdh</h1>
+<div class="row" style="margin-top: 30px;">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row" style="margin-bottom: 0;">
+                <div class="col s8">
+                    <h4>Registro de Asistencias</h4>
+                </div>
+                <div class="col s4 right-align" style="margin-top: 15px;">
+                    <a asp-page="/CrearAsistencia" class="btn waves-effect waves-light teal lighten-2">
+                        <i class="material-icons left">access_time</i>Marcar / Registrar
+                    </a>
+                </div>
+            </div>
+
+            <table class="striped responsive-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Fecha y Hora</th>
+                        <th>Estado</th>
+                        <th class="center-align">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model.ListaAsistencias)
+                    {
+                        <tr>
+                            <td>@a.IdAsistencia</td>
+                            <td>@a.IdUsuario</td>
+                            <td>@a.Fecha.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>
+                                @switch (a.Tipo)
+                                {
+                                    case "Presente":
+                                        <span class="new badge green" data-badge-caption="">Presente</span>
+                                        break;
+                                    case "Atraso":
+                                        <span class="new badge orange" data-badge-caption="">Atraso</span>
+                                        break;
+                                    default:
+                                        <span class="new badge red" data-badge-caption="">Ausente</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="center-align">
+                                <a asp-page="EditarAsistencia" asp-route-id="@a.IdAsistencia" class="btn-small blue waves-effect waves-light" title="Editar">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                                <a asp-page="VistaAsistencia" asp-page-handler="Eliminar" asp-route-id="@a.IdAsistencia" class="btn-small red waves-effect waves-light" onclick="return confirm('¿Está seguro de borrar este registro?');" title="Eliminar">
+                                    <i class="material-icons">delete</i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

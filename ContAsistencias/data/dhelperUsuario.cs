@@ -90,5 +90,22 @@ namespace ContAsistencias.data
                 }
             }
         }
+
+        public async Task<string?> ValidarUsuarioYObtenerRolAsync(string correo, string password)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "SELECT rol FROM usuario WHERE correo = @correo AND password = @password";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@correo", correo);
+                    command.Parameters.AddWithValue("@password", password);
+
+                    object? result = await command.ExecuteScalarAsync();
+                    return result?.ToString();
+                }
+            }
+        }
     }
 }

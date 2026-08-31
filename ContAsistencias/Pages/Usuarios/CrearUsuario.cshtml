@@ -2,3 +2,52 @@
 @model ContAsistencias.Pages.Usuarios.CrearUsuarioModel
 @{
 }
+<div class="row" style="margin-top: 40px;">
+    <div class="col s12 m6 offset-m3">
+        <div class="card-panel">
+            <h4 class="center-align">Nuevo Usuario</h4>
+
+            <form method="post">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">person</i>
+                        <input id="nombre" name="txtNombre" type="text" required>
+                        <label for="nombre">Nombre Completo</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">email</i>
+                        <input id="correo" name="txtCorreo" type="email" required>
+                        <label for="correo">Correo Electrónico</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">lock</i>
+                        <input id="password" name="txtPassword" type="password" required>
+                        <label for="password">Contraseña</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">assignment_ind</i>
+                        <select name="txtRol" class="browser-default" required>
+                            <option value="" disabled selected>Selecciona un rol</option>
+                            <option value="Empleado">Empleado</option>
+                            <option value="Admin">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row center-align" style="margin-top: 20px;">
+                    <button type="submit" class="btn waves-effect waves-light teal lighten-2">Guardar</button>
+                    <a asp-page="/VistaUsuarios" class="btn waves-effect waves-light grey">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
