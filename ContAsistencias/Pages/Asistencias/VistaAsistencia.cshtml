@@ -11,7 +11,7 @@
                     <h4>Registro de Asistencias</h4>
                 </div>
                 <div class="col s4 right-align" style="margin-top: 15px;">
-                    <a asp-page="/CrearAsistencia" class="btn waves-effect waves-light teal lighten-2">
+                    <a asp-page="/Asistencias/CrearAsistencia" class="btn waves-effect waves-light teal lighten-2">
                         <i class="material-icons left">access_time</i>Marcar / Registrar
                     </a>
                 </div>
@@ -49,10 +49,10 @@
                                 }
                             </td>
                             <td class="center-align">
-                                <a asp-page="EditarAsistencia" asp-route-id="@a.IdAsistencia" class="btn-small blue waves-effect waves-light" title="Editar">
+                                <a asp-page="/Asistencias/EditarAsistencia" asp-route-id="@a.IdAsistencia" class="btn-small blue waves-effect waves-light" title="Editar">
                                     <i class="material-icons">edit</i>
                                 </a>
-                                <a asp-page="VistaAsistencia" asp-page-handler="Eliminar" asp-route-id="@a.IdAsistencia" class="btn-small red waves-effect waves-light" onclick="return confirm('¿Está seguro de borrar este registro?');" title="Eliminar">
+                                <a asp-page="/Asistencias/VistaAsistencia" asp-page-handler="Eliminar" asp-route-id="@a.IdAsistencia" class="btn-small red waves-effect waves-light" onclick="return confirm('¿Está seguro de borrar este registro?');" title="Eliminar">
                                     <i class="material-icons">delete</i>
                                 </a>
                             </td>

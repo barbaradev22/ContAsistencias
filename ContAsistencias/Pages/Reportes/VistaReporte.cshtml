@@ -2,4 +2,115 @@
 @model ContAsistencias.Pages.Reportes.VistaReporteModel
 @{
 }
-<h1>detalles de reporte NONADA</h1>
+
+<div class="row" style="margin-top: 30px;">
+    <div class="col s12">
+        <div class="card-panel">
+            <h4>Reportes de Asistencia</h4>
+
+            <!-- Filtros por fecha -->
+            <form method="post" class="row" style="margin-bottom: 20px;">
+                <div class="input-field col s5">
+                    <i class="material-icons prefix">event</i>
+                    <input id="fechaInicio" name="txtFechaInicio" type="date" value="@Model.FechaInicio.ToString("yyyy-MM-dd")" required>
+                    <label for="fechaInicio">Fecha Inicio</label>
+                </div>
+
+                <div class="input-field col s5">
+                    <i class="material-icons prefix">event</i>
+                    <input id="fechaFin" name="txtFechaFin" type="date" value="@Model.FechaFin.ToString("yyyy-MM-dd")" required>
+                    <label for="fechaFin">Fecha Fin</label>
+                </div>
+
+                <div class="input-field col s2" style="margin-top: 10px;">
+                    <button type="submit" class="btn waves-effect waves-light teal lighten-2" style="width: 100%;">
+                        <i class="material-icons left">search</i>Filtrar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Tabla de Atrasos -->
+            <div style="margin-top: 30px;">
+                <h5>Registros con Atrasos</h5>
+                <table class="striped responsive-table">
+                    <thead>
+                        <tr>
+                            <th>ID Asistencia</th>
+                            <th>ID Usuario</th>
+                            <th>Fecha</th>
+                            <th>Hora Entrada</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ListaAtrasos != null && Model.ListaAtrasos.Count > 0)
+                        {
+                            @foreach (var registro in Model.ListaAtrasos)
+                            {
+                                <tr>
+                                    <td>@registro.IdAsistencia</td>
+                                    <td>@registro.IdUsuario</td>
+                                    <td>@registro.Fecha.ToString("dd/MM/yyyy")</td>
+                                    <td>@registro.Hora.ToString("HH\\:mm\\:ss")</td>
+                                    <td>
+                                        <span class="new badge orange" data-badge-caption="">Atraso</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="center-align">
+                                    <em>No hay registros de atrasos en el período seleccionado</em>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tabla de Salidas Anticipadas -->
+            <div style="margin-top: 30px;">
+                <h5>Registros con Salidas Anticipadas</h5>
+                <table class="striped responsive-table">
+                    <thead>
+                        <tr>
+                            <th>ID Asistencia</th>
+                            <th>ID Usuario</th>
+                            <th>Fecha</th>
+                            <th>Hora Salida</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ListaSalidasAntictipadas != null && Model.ListaSalidasAntictipadas.Count > 0)
+                        {
+                            @foreach (var registro in Model.ListaSalidasAntictipadas)
+                            {
+                                <tr>
+                                    <td>@registro.IdAsistencia</td>
+                                    <td>@registro.IdUsuario</td>
+                                    <td>@registro.Fecha.ToString("dd/MM/yyyy")</td>
+                                    <td>@registro.Hora.ToString("HH\\:mm\\:ss")</td>
+                                    <td>
+                                        <span class="new badge amber" data-badge-caption="">Salida Anticipada</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="center-align">
+                                    <em>No hay registros de salidas anticipadas en el período seleccionado</em>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
