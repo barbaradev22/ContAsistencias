@@ -38,7 +38,7 @@ namespace ContAsistencias.Pages.Usuarios
             };
 
             await _helperUsuario.InsertarUsuarios(usuario);
-            return RedirectToPage("/VistaUsuarios");
+            return RedirectToPage("/Usuarios/VistaUsuario");
         }
     }
 }

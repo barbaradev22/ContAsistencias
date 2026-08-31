@@ -31,7 +31,7 @@ namespace ContAsistencias.Pages.Usuarios
                 return RedirectToPage("/Login");
 
             await _helperUsuario.EliminarUsuario(id);
-            return RedirectToPage("/VistaUsuarios");
+            return RedirectToPage("/Usuarios/VistaUsuario");
         }
     }
 }
