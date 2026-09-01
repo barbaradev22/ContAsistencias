@@ -1,4 +1,5 @@
 using ContAsistencias.data;
+using ContAsistencias.modelo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -23,21 +24,32 @@ namespace ContAsistencias.Pages
             string correoDigitado = Request.Form["txtCorreo"]!;
             string passwordDigitada = Request.Form["txtContrasena"]!;
 
-            string? rolEncontrado = await _dhelperUsuario.ValidarUsuarioYObtenerRolAsync(correoDigitado, passwordDigitada);
+            Usuario? usuario = await _dhelperUsuario.ValidarUsuarioAsync(correoDigitado, passwordDigitada);
 
-            if (rolEncontrado != null)
+            if (usuario != null)
             {
-                // Guardar datos en la sesión como en tu proyecto anterior
-                HttpContext.Session.SetString("SessionRol", rolEncontrado);
-                HttpContext.Session.SetString("SessionCorreo", correoDigitado);
+                string rolNormalizado = usuario.Rol.Trim().ToLowerInvariant();
 
-                return RedirectToPage("/Index");
+                HttpContext.Session.SetInt32(SessionAccess.UsuarioIdKey, usuario.IdUsuario);
+                HttpContext.Session.SetString(SessionAccess.NombreKey, usuario.Nombre);
+                HttpContext.Session.SetString(SessionAccess.CorreoKey, usuario.Correo);
+                HttpContext.Session.SetString(SessionAccess.RoleKey, rolNormalizado);
+
+                if (rolNormalizado == "admin")
+                {
+                    return RedirectToPage("/Index");
+                }
+
+                if (rolNormalizado == "empleado")
+                {
+                    return RedirectToPage("/Empleado/VistaEmpleado");
+                }
+
+                HttpContext.Session.Clear();
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "El correo o la contraseña son incorrectos.");
-                return Page();
-            }
+
+            ModelState.AddModelError(string.Empty, "El correo o la contraseña son incorrectos.");
+            return Page();
         }
 
         public IActionResult OnGetCerrarSesion()

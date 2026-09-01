@@ -18,8 +18,11 @@ namespace ContAsistencias.Pages.Asistencias
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("SessionRol")))
+            if (!HttpContext.IsAuthenticated())
                 return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
 
             var asistencias = await _helperAsistencias.ObtenerTodasLasAsistencias();
             AsistenciaEditar = asistencias.FirstOrDefault(a => a.IdAsistencia == id);
@@ -31,6 +34,12 @@ namespace ContAsistencias.Pages.Asistencias
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!HttpContext.IsAuthenticated())
+                return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
+
             int id = int.Parse(Request.Form["txtId"]!);
             int idUsuario = int.Parse(Request.Form["txtIdUsuario"]!);
             string fechaStr = Request.Form["txtFecha"]!;
@@ -46,7 +55,7 @@ namespace ContAsistencias.Pages.Asistencias
                     IdUsuario = idUsuario,
                     Fecha = fecha,
                     Hora = hora,
-                    Tipo = tipo
+                    Tipo = tipo.Trim().ToLowerInvariant()
                 };
 
                 await _helperAsistencias.actualizarAsistencia(asistencia);

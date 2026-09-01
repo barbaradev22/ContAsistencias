@@ -23,8 +23,11 @@ namespace ContAsistencias.Pages.Reportes
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("SessionRol")))
+            if (!HttpContext.IsAuthenticated())
                 return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
 
             FechaInicio = DateTime.Now.AddDays(-7);
             FechaFin = DateTime.Now;
@@ -52,6 +55,12 @@ namespace ContAsistencias.Pages.Reportes
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!HttpContext.IsAuthenticated())
+                return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
+
             string fechaInicioStr = Request.Form["txtFechaInicio"]!;
             string fechaFinStr = Request.Form["txtFechaFin"]!;
 

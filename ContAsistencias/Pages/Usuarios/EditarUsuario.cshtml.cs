@@ -18,24 +18,33 @@ namespace ContAsistencias.Pages.Usuarios
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("SessionRol")))
+            if (!HttpContext.IsAuthenticated())
                 return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
 
             var usuarios = await _helperUsuario.ObtenerUsuarios();
             UsuarioEditar = usuarios.FirstOrDefault(u => u.IdUsuario == id);
 
-            if (UsuarioEditar == null) return RedirectToPage("/VistaUsuarios");
+            if (UsuarioEditar == null) return RedirectToPage("/Usuarios/VistaUsuario");
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!HttpContext.IsAuthenticated())
+                return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
+
             int id = int.Parse(Request.Form["txtId"]!);
             string nombre = Request.Form["txtNombre"]!;
             string correo = Request.Form["txtCorreo"]!;
             string password = Request.Form["txtPassword"]!;
-            string rol = Request.Form["txtRol"]!;
+            string rol = Request.Form["txtRol"]!.ToString().Trim().ToLowerInvariant();
 
             var usuario = new Usuario
             {
@@ -47,7 +56,7 @@ namespace ContAsistencias.Pages.Usuarios
             };
 
             await _helperUsuario.ActualizarUsuario(usuario);
-            return RedirectToPage("/VistaUsuarios");
+            return RedirectToPage("/Usuarios/VistaUsuario");
         }
     }
 }

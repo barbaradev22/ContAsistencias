@@ -91,21 +91,41 @@ namespace ContAsistencias.data
             }
         }
 
-        public async Task<string?> ValidarUsuarioYObtenerRolAsync(string correo, string password)
+        public async Task<Usuario?> ValidarUsuarioAsync(string correo, string password)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                string query = "SELECT rol FROM usuario WHERE correo = @correo AND password = @password";
+                string query = "SELECT id_usuario, nombre, correo, password, rol FROM usuario WHERE correo = @correo AND password = @password";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@correo", correo);
                     command.Parameters.AddWithValue("@password", password);
 
-                    object? result = await command.ExecuteScalarAsync();
-                    return result?.ToString();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Usuario
+                            {
+                                IdUsuario = reader.GetInt32(reader.GetOrdinal("id_usuario")),
+                                Nombre = reader.GetString(reader.GetOrdinal("nombre")),
+                                Correo = reader.GetString(reader.GetOrdinal("correo")),
+                                Password = reader.GetString(reader.GetOrdinal("password")),
+                                Rol = reader.GetString(reader.GetOrdinal("rol"))
+                            };
+                        }
+                    }
                 }
             }
+
+            return null;
+        }
+
+        public async Task<string?> ValidarUsuarioYObtenerRolAsync(string correo, string password)
+        {
+            Usuario? usuario = await ValidarUsuarioAsync(correo, password);
+            return usuario?.Rol;
         }
     }
 }
