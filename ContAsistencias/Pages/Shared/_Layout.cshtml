@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using ContAsistencias.data
+@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -11,61 +13,78 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+    @{ 
+        var rolActual = Context.GetRol();
+        var nombreActual = Context.GetNombre();
+    }
+
     <nav class="navbar-custom z-depth-1 grey darken-1">
         <div class="nav-wrapper container">
-            <!-- Logo del Sistema -->
             <a asp-page="/Index" class="brand-logo left flex-logo">
                 <i class="material-icons logo-icon">access_time</i>
                 <span class="logo-text">Control Asistencia</span>
             </a>
 
-            <!-- Enlaces principales del sistema -->
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li>
-                    <a asp-page="/Index" class="nav-link">
-                        <i class="material-icons left">check_circle</i>Marcar Asistencia
-                    </a>
-                </li>
+                @if (string.IsNullOrWhiteSpace(rolActual))
+                {
+                    <li>
+                        <a asp-page="/Login" class="nav-link">
+                            <i class="material-icons left">login</i>Iniciar sesión
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    @if (rolActual == "admin")
+                    {
+                        <li>
+                            <a asp-page="/Index" class="nav-link">
+                                <i class="material-icons left">dashboard</i>Administración
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Usuarios/VistaUsuario" class="nav-link">
+                                <i class="material-icons left">people</i>Usuarios
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Reportes/VistaReporte" class="nav-link">
+                                <i class="material-icons left">assessment</i>Reportes
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Asistencias/VistaAsistencia" class="nav-link">
+                                <i class="material-icons left">check_circle</i>Asistencia
+                            </a>
+                        </li>
+                    }
+                    else if (rolActual == "empleado")
+                    {
+                        <li>
+                            <a asp-page="/Empleado/VistaEmpleado" class="nav-link">
+                                <i class="material-icons left">check_circle</i>Asistencia
+                            </a>
+                        </li>
+                    }
 
-                <!-- Dropdown para Reportes (RE-01, RE-02, RE-03) -->
-                <li>
-                    <a class="dropdown-trigger nav-link" href="#!" data-target="dropdown-reportes">
-                        <i class="material-icons left">assessment</i>Reportes
-                        <i class="material-icons right">arrow_drop_down</i>
-                    </a>
-                </li>
-
-                <!-- Gestión de Usuarios (GU-01, GU-02, GU-03) -->
-                <li>
-                    <a asp-page="/Usuarios/Index" class="nav-link">
-                        <i class="material-icons left">people</i>Gestión Usuarios
-                    </a>
-                </li>
+                    <li>
+                        <a asp-page="/Login" asp-page-handler="CerrarSesion" class="nav-link">
+                            <i class="material-icons left">logout</i>Salir
+                        </a>
+                    </li>
+                }
             </ul>
         </div>
     </nav>
 
-    <!-- Estructura del Dropdown para los Reportes del Administrador -->
-    <ul id="dropdown-reportes" class="dropdown-content">
-        <li>
-            <a asp-page="/Reportes/Atrasos">
-                <i class="material-icons">alarm_on</i>Atrasos (> 9:30 AM)
-            </a>
-        </li>
-        <li>
-            <a asp-page="/Reportes/SalidasAnticipadas">
-                <i class="material-icons">alarm_off</i>Salidas Anticipadas (< 17:30 PM)
-            </a>
-        </li>
-        <li class="divider"></li>
-        <li>
-            <a asp-page="/Reportes/Inasistencias">
-                <i class="material-icons">person_off</i>Inasistencias
-            </a>
-        </li>
-    </ul>
-
-    <div class="container">
+    <div class="container" style="margin-top: 20px;">
+        @if (!string.IsNullOrWhiteSpace(nombreActual))
+        {
+            <div class="right-align grey-text text-darken-1" style="margin-bottom: 10px;">
+                Sesión activa: <strong>@nombreActual</strong> (@rolActual)
+            </div>
+        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

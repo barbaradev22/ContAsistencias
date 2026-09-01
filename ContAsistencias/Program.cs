@@ -3,10 +3,10 @@ using ContAsistencias.data;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddTransient<dhelperAsistencias>();
 builder.Services.AddScoped<dhelperUsuario>();
-builder.Services.AddScoped<dhelperAsistencias>();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -28,8 +28,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseSession();
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthorization();
 

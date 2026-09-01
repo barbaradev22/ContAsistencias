@@ -16,18 +16,27 @@ namespace ContAsistencias.Pages.Usuarios
 
         public IActionResult OnGet()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("SessionRol")))
+            if (!HttpContext.IsAuthenticated())
                 return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!HttpContext.IsAuthenticated())
+                return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
+
             string nombre = Request.Form["txtNombre"]!;
             string correo = Request.Form["txtCorreo"]!;
             string password = Request.Form["txtPassword"]!;
-            string rol = Request.Form["txtRol"]!;
+            string rol = Request.Form["txtRol"]!.ToString().Trim().ToLowerInvariant();
 
             var usuario = new Usuario
             {

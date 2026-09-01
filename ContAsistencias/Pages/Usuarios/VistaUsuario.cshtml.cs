@@ -18,8 +18,11 @@ namespace ContAsistencias.Pages.Usuarios
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("SessionRol")))
+            if (!HttpContext.IsAuthenticated())
                 return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
 
             ListaUsuarios = await _helperUsuario.ObtenerUsuarios();
             return Page();
@@ -27,8 +30,11 @@ namespace ContAsistencias.Pages.Usuarios
 
         public async Task<IActionResult> OnGetEliminarAsync(int id)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("SessionRol")))
+            if (!HttpContext.IsAuthenticated())
                 return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
 
             await _helperUsuario.EliminarUsuario(id);
             return RedirectToPage("/Usuarios/VistaUsuario");

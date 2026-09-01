@@ -1,55 +1,49 @@
 ﻿@page
 @model ContAsistencias.Pages.IndexModel
 @{
-    ViewData["Title"] = "Inicio - Control de Asistencias";
+    ViewData["Title"] = "Panel de Administración";
 }
-<a asp-page="/Login" class="btn btn-primary">Ir al Login</a>
-<div class="container" style="margin-top: 50px;">
-    <div class="row">
-        <div class="col s12 center-align">
-            <h3>Sistema de Control de Asistencias</h3>
-            <p class="flow-text grey-text text-darken-1">Panel principal de administración</p>
+
+<div class="row" style="margin-top: 30px;">
+    <div class="col s12 center-align">
+        <h3>Sistema de Control de Asistencias</h3>
+        <p class="flow-text grey-text text-darken-1">Panel de administración</p>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 30px;">
+    <div class="col s12 m4">
+        <div class="card hoverable">
+            <div class="card-content center-align">
+                <span class="card-title blue-text">Usuarios</span>
+                <p>Administrar, registrar y eliminar usuarios del sistema.</p>
+            </div>
+            <div class="card-action center-align">
+                <a asp-page="/Usuarios/VistaUsuario" class="btn blue waves-effect waves-light">Ver usuarios</a>
+            </div>
         </div>
     </div>
 
-    <!--El index esta bien bro, hay que hacer que se loguee cuando aprete cada boton si-->
-    <div class="row" style="margin-top: 30px;">
-        <!-- Tarjeta Gestión de Usuarios -->
-        <div class="col s12 m4">
-            <div class="card hoverable">
-                <div class="card-content center-align">
-                    <span class="card-title blue-text">Usuarios</span>
-                    <p>Administrar, registrar y eliminar usuarios del sistema.</p>
-                </div>
-                <div class="card-action center-align">
-                    <a asp-page="/Usuarios/VistaUsuario" class="btn blue waves-effect waves-light">Ver Usuarios</a>
-                </div>
+    <div class="col s12 m4">
+        <div class="card hoverable">
+            <div class="card-content center-align">
+                <span class="card-title green-text">Asistencias</span>
+                <p>Gestionar registros de entrada y salida.</p>
+            </div>
+            <div class="card-action center-align">
+                <a asp-page="/Asistencias/VistaAsistencia" class="btn green waves-effect waves-light">Ver asistencias</a>
             </div>
         </div>
+    </div>
 
-        <!-- Tarjeta Asistencias -->
-        <div class="col s12 m4">
-            <div class="card hoverable">
-                <div class="card-content center-align">
-                    <span class="card-title green-text">Asistencias</span>
-                    <p>Registrar entradas y salidas de los empleados.</p>
-                </div>
-                <div class="card-action center-align">
-                    <a asp-page="/Asistencias/VistaAsistencia" class="btn green waves-effect waves-light">Gestionar Asistencias</a>
-                </div>
+    <div class="col s12 m4">
+        <div class="card hoverable">
+            <div class="card-content center-align">
+                <span class="card-title orange-text">Reportes</span>
+                <p>Ver atrasos, salidas anticipadas e inasistencias.</p>
             </div>
-        </div>
-
-        <!-- Tarjeta Reportes -->
-        <div class="col s12 m4">
-            <div class="card hoverable">
-                <div class="card-content center-align">
-                    <span class="card-title orange-text">Reportes</span>
-                    <p>Ver atrasos, salidas anticipadas e inasistencias.</p>
-                </div>
-                <div class="card-action center-align">
-                    <a asp-page="/Reportes/VistaReporte" class="btn orange waves-effect waves-light">Ver Reportes</a>
-                </div>
+            <div class="card-action center-align">
+                <a asp-page="/Reportes/VistaReporte" class="btn orange waves-effect waves-light">Ver reportes</a>
             </div>
         </div>
     </div>

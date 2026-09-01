@@ -38,15 +38,15 @@
                     <div class="input-field col s12">
                         <i class="material-icons prefix">assignment_ind</i>
                         <select name="txtRol" class="browser-default" required>
-                            <option value="Empleado" selected="@(Model.UsuarioEditar?.Rol == "Empleado")">Empleado</option>
-                            <option value="Admin" selected="@(Model.UsuarioEditar?.Rol == "Admin")">Administrador</option>
+                            <option value="empleado" selected="@(Model.UsuarioEditar?.Rol == "empleado")">Empleado</option>
+                            <option value="admin" selected="@(Model.UsuarioEditar?.Rol == "admin")">Administrador</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="row center-align" style="margin-top: 20px;">
                     <button type="submit" class="btn waves-effect waves-light blue">Actualizar</button>
-                    <a asp-page="/VistaUsuarios" class="btn waves-effect waves-light grey">Cancelar</a>
+                    <a asp-page="/Usuarios/VistaUsuario" class="btn waves-effect waves-light grey">Cancelar</a>
                 </div>
             </form>
         </div>

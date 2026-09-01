@@ -1,0 +1,81 @@
+@page
+@model ContAsistencias.Pages.Empleado.VistaEmpleadoModel
+@{
+    ViewData["Title"] = "Vista de Empleado";
+}
+
+<div class="row" style="margin-top: 30px;">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row" style="margin-bottom: 0;">
+                <div class="col s12 m8">
+                    <h4>Asistencia del empleado</h4>
+                    <p class="grey-text text-darken-1">@Model.NombreEmpleado</p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+            {
+                <div class="card-panel teal lighten-5 teal-text text-darken-4" style="margin-bottom: 20px;">
+                    @Model.Mensaje
+                </div>
+            }
+
+            <form method="post" asp-page-handler="Registrar" class="row" style="margin-bottom: 25px;">
+                <div class="col s12 m6">
+                    <button type="submit" name="txtTipo" value="entrada" class="btn waves-effect waves-light green" style="width: 100%;">
+                        <i class="material-icons left">login</i>Marcar entrada
+                    </button>
+                </div>
+                <div class="col s12 m6" style="margin-top: 10px;">
+                    <button type="submit" name="txtTipo" value="salida" class="btn waves-effect waves-light orange" style="width: 100%;">
+                        <i class="material-icons left">logout</i>Marcar salida
+                    </button>
+                </div>
+            </form>
+
+            <h5>Mis registros</h5>
+            <table class="striped responsive-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MisAsistencias != null && Model.MisAsistencias.Count > 0)
+                    {
+                        foreach (var asistencia in Model.MisAsistencias.OrderByDescending(a => a.Fecha).ThenByDescending(a => a.Hora))
+                        {
+                            <tr>
+                                <td>@asistencia.IdAsistencia</td>
+                                <td>@asistencia.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>@asistencia.Hora.ToString(@"hh\:mm\:ss")</td>
+                                <td>
+                                    @if (asistencia.Tipo.Equals("entrada", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="new badge green" data-badge-caption="">Entrada</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="new badge orange" data-badge-caption="">Salida</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="center-align">
+                                <em>No hay registros de asistencia todavía.</em>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

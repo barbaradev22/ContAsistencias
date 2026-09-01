@@ -33,15 +33,29 @@
                         <tr>
                             <td>@a.IdAsistencia</td>
                             <td>@a.IdUsuario</td>
-                            <td>@a.Fecha.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>@a.Fecha.ToString("dd/MM/yyyy") @a.Hora.ToString(@"hh\:mm\:ss")</td>
                             <td>
-                                @switch (a.Tipo)
+                                @switch (a.Tipo?.ToLowerInvariant())
                                 {
-                                    case "Presente":
-                                        <span class="new badge green" data-badge-caption="">Presente</span>
+                                    case "entrada":
+                                        if (a.Hora <= new TimeSpan(9, 30, 0))
+                                        {
+                                            <span class="new badge green" data-badge-caption="">Presente</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="new badge orange" data-badge-caption="">Atraso</span>
+                                        }
                                         break;
-                                    case "Atraso":
-                                        <span class="new badge orange" data-badge-caption="">Atraso</span>
+                                    case "salida":
+                                        if (a.Hora < new TimeSpan(17, 30, 0))
+                                        {
+                                            <span class="new badge red" data-badge-caption="">Salida anticipada</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="new badge green" data-badge-caption="">Presente</span>
+                                        }
                                         break;
                                     default:
                                         <span class="new badge red" data-badge-caption="">Ausente</span>
