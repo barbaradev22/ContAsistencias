@@ -2,11 +2,17 @@ using ContAsistencias.data;
 using ContAsistencias.modelo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace ContAsistencias.Pages.Reportes
 {
     public class VistaReporteModel : PageModel
     {
+        private static readonly TimeSpan HoraAtraso = TimeSpan.Parse("09:30:00");
+        private static readonly TimeSpan HoraSalidaAnticipada = TimeSpan.Parse("17:30:00");
+
         private readonly dhelperAsistencias _helperAsistencias;
         private readonly dhelperUsuario _helperUsuario;
 
@@ -29,27 +35,7 @@ namespace ContAsistencias.Pages.Reportes
             if (!HttpContext.IsAdmin())
                 return RedirectToPage("/Empleado/VistaEmpleado");
 
-            FechaInicio = DateTime.Now.AddDays(-7);
-            FechaFin = DateTime.Now;
-
-            // Obtener todos los registros de asistencia
-            var todasLasAsistencias = await _helperAsistencias.ObtenerTodasLasAsistencias();
-
-            // Filtrar por rango de fechas
-            var asistenciasRango = todasLasAsistencias
-                .Where(a => a.Fecha.Date >= FechaInicio.Date && a.Fecha.Date <= FechaFin.Date)
-                .ToList();
-
-            // Filtrar atrasos (entrada después de 09:30:00)
-            ListaAtrasos = asistenciasRango
-                .Where(a => a.Tipo.ToLower() == "entrada" && a.Hora > TimeSpan.Parse("09:30:00"))
-                .ToList();
-
-            // Filtrar salidas anticipadas (salida antes de 17:30:00)
-            ListaSalidasAntictipadas = asistenciasRango
-                .Where(a => a.Tipo.ToLower() == "salida" && a.Hora < TimeSpan.Parse("17:30:00"))
-                .ToList();
-
+            await CargarReporteAsync(DateTime.Now.AddDays(-7), DateTime.Now);
             return Page();
         }
 
@@ -61,35 +47,128 @@ namespace ContAsistencias.Pages.Reportes
             if (!HttpContext.IsAdmin())
                 return RedirectToPage("/Empleado/VistaEmpleado");
 
-            string fechaInicioStr = Request.Form["txtFechaInicio"]!;
-            string fechaFinStr = Request.Form["txtFechaFin"]!;
-
-            if (DateTime.TryParse(fechaInicioStr, out DateTime fechaInicio) &&
-                DateTime.TryParse(fechaFinStr, out DateTime fechaFin))
+            if (DateTime.TryParse(Request.Form["txtFechaInicio"], out DateTime fechaInicio) &&
+                DateTime.TryParse(Request.Form["txtFechaFin"], out DateTime fechaFin))
             {
-                FechaInicio = fechaInicio;
-                FechaFin = fechaFin;
-
-                // Obtener todos los registros de asistencia
-                var todasLasAsistencias = await _helperAsistencias.ObtenerTodasLasAsistencias();
-
-                // Filtrar por rango de fechas
-                var asistenciasRango = todasLasAsistencias
-                    .Where(a => a.Fecha.Date >= FechaInicio.Date && a.Fecha.Date <= FechaFin.Date)
-                    .ToList();
-
-                // Filtrar atrasos
-                ListaAtrasos = asistenciasRango
-                    .Where(a => a.Tipo.ToLower() == "entrada" && a.Hora > TimeSpan.Parse("09:30:00"))
-                    .ToList();
-
-                // Filtrar salidas anticipadas
-                ListaSalidasAntictipadas = asistenciasRango
-                    .Where(a => a.Tipo.ToLower() == "salida" && a.Hora < TimeSpan.Parse("17:30:00"))
-                    .ToList();
+                await CargarReporteAsync(fechaInicio, fechaFin);
             }
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostPdfAsync()
+        {
+            if (!HttpContext.IsAuthenticated())
+                return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
+
+            if (!DateTime.TryParse(Request.Form["txtFechaInicio"], out DateTime fechaInicio) ||
+                !DateTime.TryParse(Request.Form["txtFechaFin"], out DateTime fechaFin))
+            {
+                return Page();
+            }
+
+            await CargarReporteAsync(fechaInicio, fechaFin);
+
+            var pdf = GenerarPdf();
+            var nombreArchivo = $"Reporte_Asistencia_{FechaInicio:yyyyMMdd}_{FechaFin:yyyyMMdd}.pdf";
+            return File(pdf, "application/pdf", nombreArchivo);
+        }
+
+        private async Task CargarReporteAsync(DateTime fechaInicio, DateTime fechaFin)
+        {
+            FechaInicio = fechaInicio;
+            FechaFin = fechaFin;
+
+            var todasLasAsistencias = await _helperAsistencias.ObtenerTodasLasAsistencias();
+            var asistenciasRango = todasLasAsistencias
+                .Where(a => a.Fecha.Date >= FechaInicio.Date && a.Fecha.Date <= FechaFin.Date)
+                .ToList();
+
+            ListaAtrasos = asistenciasRango
+                .Where(a => string.Equals(a.Tipo, "entrada", StringComparison.OrdinalIgnoreCase) && a.Hora > HoraAtraso)
+                .ToList();
+
+            ListaSalidasAntictipadas = asistenciasRango
+                .Where(a => string.Equals(a.Tipo, "salida", StringComparison.OrdinalIgnoreCase) && a.Hora < HoraSalidaAnticipada)
+                .ToList();
+        }
+
+        private byte[] GenerarPdf()
+        {
+            using var stream = new MemoryStream();
+
+            Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(30);
+                    page.Size(PageSizes.A4);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+
+                    page.Header().Column(header =>
+                    {
+                        header.Item().Text("Reportes de Asistencia").FontSize(18).SemiBold();
+                        header.Item().PaddingTop(4).Text($"Período: {FechaInicio:dd/MM/yyyy} - {FechaFin:dd/MM/yyyy}").FontSize(11);
+                    });
+
+                    page.Content().Column(column =>
+                    {
+                        column.Spacing(14);
+                        RenderSection(column, "Registros con Atrasos", "Hora Entrada", ListaAtrasos, "Atraso");
+                        RenderSection(column, "Registros con Salidas Anticipadas", "Hora Salida", ListaSalidasAntictipadas, "Salida Anticipada");
+                    });
+                });
+            }).GeneratePdf(stream);
+
+            return stream.ToArray();
+        }
+
+        private static void RenderSection(ColumnDescriptor column, string titulo, string horaEncabezado, IReadOnlyCollection<Asistencia> registros, string estado)
+        {
+            column.Item().Text(titulo).FontSize(13).SemiBold();
+            column.Item().Table(table =>
+            {
+                table.ColumnsDefinition(columns =>
+                {
+                    columns.ConstantColumn(70);
+                    columns.ConstantColumn(70);
+                    columns.ConstantColumn(80);
+                    columns.ConstantColumn(85);
+                    columns.RelativeColumn();
+                });
+
+                table.Header(header =>
+                {
+                    header.Cell().Element(CellStyle).Text("ID Asistencia").SemiBold();
+                    header.Cell().Element(CellStyle).Text("ID Usuario").SemiBold();
+                    header.Cell().Element(CellStyle).Text("Fecha").SemiBold();
+                    header.Cell().Element(CellStyle).Text(horaEncabezado).SemiBold();
+                    header.Cell().Element(CellStyle).Text("Estado").SemiBold();
+                });
+
+                if (registros.Count == 0)
+                {
+                    table.Cell().ColumnSpan(5).Element(CellStyle).PaddingVertical(8).Text($"No hay registros de {estado.ToLowerInvariant()} en el período seleccionado").Italic();
+                    return;
+                }
+
+                foreach (var registro in registros)
+                {
+                    table.Cell().Element(CellStyle).Text(registro.IdAsistencia.ToString());
+                    table.Cell().Element(CellStyle).Text(registro.IdUsuario.ToString());
+                    table.Cell().Element(CellStyle).Text(registro.Fecha.ToString("dd/MM/yyyy"));
+                    table.Cell().Element(CellStyle).Text(registro.Hora.ToString(@"hh\:mm\:ss"));
+                    table.Cell().Element(CellStyle).Text(estado);
+                }
+            });
+        }
+
+        private static IContainer CellStyle(IContainer container)
+        {
+            return container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(4).PaddingRight(2);
         }
     }
 }

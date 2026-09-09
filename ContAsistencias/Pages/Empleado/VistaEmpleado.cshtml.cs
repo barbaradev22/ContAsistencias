@@ -80,9 +80,8 @@ namespace ContAsistencias.Pages.Empleado
                 Tipo = tipo
             });
 
-            Mensaje = $"Se registró la {tipo} correctamente.";
-            await CargarDatosAsync(idUsuario);
-            return Page();
+            var mensaje = $"Se registró la {tipo} correctamente.";
+            return RedirectToPage("/TimeOut", new { message = mensaje });
         }
 
         private async Task CargarDatosAsync(int idUsuario)

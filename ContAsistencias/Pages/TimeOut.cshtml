@@ -1,0 +1,39 @@
+@page
+@model ContAsistencias.Pages.TimeOutModel
+@{
+}
+
+<div class="row" style="margin-top: 40px;">
+    <div class="col s12 m8 offset-m2">
+        <div class="card-panel center-align">
+            <h5>Time out</h5>
+            <p>@Model.Message</p>
+            <p>Volviendo al inicio en <span id="countdown">5</span> segundos...</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function() {
+            var seconds = 5;
+            var countdownEl = document.getElementById('countdown');
+
+            var interval = setInterval(function() {
+                seconds--;
+                countdownEl.textContent = seconds;
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    // Llamada al handler que limpia la sesión
+                    fetch(window.location.pathname + '?handler=Clear')
+                        .then(function() {
+                            window.location.href = '/Login';
+                        })
+                        .catch(function() {
+                            window.location.href = '/Login';
+                        });
+                }
+            }, 1000);
+        })();
+    </script>
+}
