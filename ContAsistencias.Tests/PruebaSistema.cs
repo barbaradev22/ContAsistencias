@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ContAsistencias.Tests
+﻿namespace ContAsistencias.Tests
 {
     public class PruebaSistema
     {
