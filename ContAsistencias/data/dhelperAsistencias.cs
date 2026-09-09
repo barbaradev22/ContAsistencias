@@ -44,12 +44,14 @@ namespace ContAsistencias.data
                     {
                         while (await reader.ReadAsync())
                         {
+                            int ordHora = reader.GetOrdinal("hora_asistencia");
+
                             Asistencia asistencia = new Asistencia
                             {
                                 IdAsistencia = reader.GetInt32(reader.GetOrdinal("id_asistencia")),
                                 IdUsuario = reader.GetInt32(reader.GetOrdinal("id_usuario")),
                                 Fecha = reader.GetDateTime(reader.GetOrdinal("fecha_asistencia")),
-                                Hora = reader.GetTimeSpan(reader.GetOrdinal("hora_asistencia")),
+                                Hora = ConvertirHoraAsistencia(reader, ordHora),
                                 Tipo = reader.GetString(reader.GetOrdinal("tipo_asistencia"))
                             };
                             asistencias.Add(asistencia);
@@ -104,12 +106,14 @@ namespace ContAsistencias.data
                     {
                         while (await reader.ReadAsync())
                         {
+                            int ordHora = reader.GetOrdinal("hora_asistencia");
+
                             Asistencia asistencia = new Asistencia
                             {
                                 IdAsistencia = reader.GetInt32(reader.GetOrdinal("id_asistencia")),
                                 IdUsuario = reader.GetInt32(reader.GetOrdinal("id_usuario")),
                                 Fecha = reader.GetDateTime(reader.GetOrdinal("fecha_asistencia")),
-                                Hora = reader.GetTimeSpan(reader.GetOrdinal("hora_asistencia")),
+                                Hora = ConvertirHoraAsistencia(reader, ordHora),
                                 Tipo = reader.GetString(reader.GetOrdinal("tipo_asistencia"))
                             };
                             asistencias.Add(asistencia);
@@ -133,12 +137,14 @@ namespace ContAsistencias.data
                     {
                         while (await reader.ReadAsync())
                         {
+                            int ordHora = reader.GetOrdinal("hora_asistencia");
+
                             Asistencia asistencia = new Asistencia
                             {
                                 IdAsistencia = reader.GetInt32(reader.GetOrdinal("id_asistencia")),
                                 IdUsuario = reader.GetInt32(reader.GetOrdinal("id_usuario")),
                                 Fecha = reader.GetDateTime(reader.GetOrdinal("fecha_asistencia")),
-                                Hora = reader.GetTimeSpan(reader.GetOrdinal("hora_asistencia")),
+                                Hora = ConvertirHoraAsistencia(reader, ordHora),
                                 Tipo = reader.GetString(reader.GetOrdinal("tipo_asistencia"))
                             };
                             asistencias.Add(asistencia);
@@ -195,12 +201,7 @@ namespace ContAsistencias.data
                                 IdAsistencia = reader.GetInt32(ordIdAsistencia),
                                 IdUsuario = reader.GetInt32(ordIdUsuario),
                                 Fecha = reader.GetDateTime(ordFecha).Date,
-
-                                // Asignación directa a TimeSpan con validación de nulos
-                                Hora = !reader.IsDBNull(ordHora)
-                                       ? reader.GetTimeSpan(ordHora)
-                                       : TimeSpan.Zero,
-
+                                Hora = ConvertirHoraAsistencia(reader, ordHora),
                                 Tipo = !reader.IsDBNull(ordTipo)
                                        ? reader.GetString(ordTipo)
                                        : string.Empty
@@ -210,6 +211,32 @@ namespace ContAsistencias.data
                 }
             }
             return asistencias;
+        }
+
+        /// <summary>
+        /// Método privado para convertir Hora de forma robusta
+        /// Maneja tanto TIME como VARCHAR en la base de datos
+        /// </summary>
+        private TimeSpan ConvertirHoraAsistencia(SqlDataReader reader, int ordinal)
+        {
+            if (reader.IsDBNull(ordinal))
+                return TimeSpan.Zero;
+
+            try
+            {
+                // Intenta obtener como TimeSpan (si es tipo TIME en SQL)
+                return reader.GetTimeSpan(ordinal);
+            }
+            catch (InvalidCastException)
+            {
+                // Si falla, intenta parsear como string (si es VARCHAR en SQL)
+                string horaStr = reader.GetString(ordinal);
+                if (!string.IsNullOrWhiteSpace(horaStr) && TimeSpan.TryParse(horaStr, out TimeSpan resultado))
+                {
+                    return resultado;
+                }
+                return TimeSpan.Zero;
+            }
         }
     }
 }

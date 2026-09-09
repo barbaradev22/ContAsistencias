@@ -24,7 +24,7 @@ namespace ContAsistencias.Pages.Usuarios
             if (!HttpContext.IsAdmin())
                 return RedirectToPage("/Empleado/VistaEmpleado");
 
-            ListaUsuarios = await _helperUsuario.ObtenerUsuarios();
+            ListaUsuarios = await _helperUsuario.ObtenerTodosLosUsuarios();
             return Page();
         }
 

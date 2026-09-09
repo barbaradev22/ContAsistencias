@@ -7,6 +7,12 @@
         <div class="card-panel">
             <h4 class="center-align">Editar Usuario</h4>
 
+            @{
+                var estadoUsuario = Model.UsuarioEditar?.Activo == true ? "Activo" : "Inactivo";
+                var claseEstado = Model.UsuarioEditar?.Activo == true ? "green-text" : "red-text";
+            }
+            <p class="center-align @claseEstado"><strong>Estado: @estadoUsuario</strong></p>
+
             <form method="post">
                 <input type="hidden" name="txtId" value="@Model.UsuarioEditar?.IdUsuario" />
 
@@ -47,6 +53,24 @@
                 <div class="row center-align" style="margin-top: 20px;">
                     <button type="submit" class="btn waves-effect waves-light blue">Actualizar</button>
                     <a asp-page="/Usuarios/VistaUsuario" class="btn waves-effect waves-light grey">Cancelar</a>
+                </div>
+            </form>
+
+            <form method="post" asp-page-handler="CambiarEstado" style="margin-top: 20px;">
+                <input type="hidden" name="id" value="@Model.UsuarioEditar?.IdUsuario" />
+                <div class="row center-align">
+                    @if (Model.UsuarioEditar?.Activo == true)
+                    {
+                        <button type="submit" class="btn waves-effect waves-light red">
+                            <i class="material-icons left">block</i>Desactivar Usuario
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn waves-effect waves-light green">
+                            <i class="material-icons left">check_circle</i>Activar Usuario
+                        </button>
+                    }
                 </div>
             </form>
         </div>

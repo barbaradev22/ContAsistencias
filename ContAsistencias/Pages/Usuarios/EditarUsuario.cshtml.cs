@@ -24,8 +24,7 @@ namespace ContAsistencias.Pages.Usuarios
             if (!HttpContext.IsAdmin())
                 return RedirectToPage("/Empleado/VistaEmpleado");
 
-            var usuarios = await _helperUsuario.ObtenerUsuarios();
-            UsuarioEditar = usuarios.FirstOrDefault(u => u.IdUsuario == id);
+            UsuarioEditar = await _helperUsuario.ObtenerUsuarioPorId(id);
 
             if (UsuarioEditar == null) return RedirectToPage("/Usuarios/VistaUsuario");
 
@@ -56,6 +55,25 @@ namespace ContAsistencias.Pages.Usuarios
             };
 
             await _helperUsuario.ActualizarUsuario(usuario);
+            return RedirectToPage("/Usuarios/VistaUsuario");
+        }
+
+        public async Task<IActionResult> OnPostCambiarEstadoAsync(int id)
+        {
+            if (!HttpContext.IsAuthenticated())
+                return RedirectToPage("/Login");
+
+            if (!HttpContext.IsAdmin())
+                return RedirectToPage("/Empleado/VistaEmpleado");
+
+            var usuario = await _helperUsuario.ObtenerUsuarioPorId(id);
+            if (usuario == null)
+                return RedirectToPage("/Usuarios/VistaUsuario");
+
+            // Cambiar estado: si estaba activo pasa a inactivo y viceversa
+            int nuevoEstado = usuario.Activo ? 0 : 1;
+            await _helperUsuario.CambiarEstadoActivo(id, nuevoEstado);
+
             return RedirectToPage("/Usuarios/VistaUsuario");
         }
     }

@@ -48,14 +48,14 @@
                             @foreach (var registro in Model.ListaAtrasos)
                             {
                                 <tr>
-                                    <td>@registro.IdAsistencia</td>
-                                    <td>@registro.IdUsuario</td>
-                                    <td>@registro.Fecha.ToString("dd/MM/yyyy")</td>
-                                    <td>@registro.Hora</td>
-                                    <td>
-                                        <span class="new badge orange" data-badge-caption="">Atraso</span>
-                                    </td>
-                                </tr>
+                                        <td>@registro.IdAsistencia</td>
+                                        <td>@registro.IdUsuario</td>
+                                        <td>@registro.Fecha.ToString("dd/MM/yyyy")</td>
+                                        <td>@registro.Hora.ToString(@"hh\:mm\:ss")</td>
+                                        <td>
+                                            <span class="new badge orange" data-badge-caption="">Atraso</span>
+                                        </td>
+                                    </tr>
                             }
                         }
                         else
@@ -71,7 +71,7 @@
             </div>
 
             <!-- Tabla de Salidas Anticipadas -->
-            <div style="margin-top: 30px;">
+            <div style="margin-top: 30px;">1
                 <h5>Registros con Salidas Anticipadas</h5>
                 <table class="striped responsive-table">
                     <thead>
@@ -92,7 +92,7 @@
                                     <td>@registro.IdAsistencia</td>
                                     <td>@registro.IdUsuario</td>
                                     <td>@registro.Fecha.ToString("dd/MM/yyyy")</td>
-                                    <td>@registro.Hora.ToString("HH\\:mm\\:ss")</td>
+                                    <td>@registro.Hora.ToString(@"hh\:mm\:ss")</td>
                                     <td>
                                         <span class="new badge amber" data-badge-caption="">Salida Anticipada</span>
                                     </td>
