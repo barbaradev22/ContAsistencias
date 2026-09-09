@@ -36,7 +36,7 @@ namespace ContAsistencias.data
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                string query = "SELECT * FROM usuario";
+                string query = "SELECT * FROM usuario WHERE activo = 1";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     using (SqlDataReader reader = await command.ExecuteReaderAsync())
@@ -49,7 +49,38 @@ namespace ContAsistencias.data
                                 Nombre = reader.GetString(reader.GetOrdinal("nombre")),
                                 Correo = reader.GetString(reader.GetOrdinal("correo")),
                                 Password = reader.GetString(reader.GetOrdinal("password")),
-                                Rol = reader.GetString(reader.GetOrdinal("rol"))
+                                Rol = reader.GetString(reader.GetOrdinal("rol")),
+                                Activo = reader.GetBoolean(reader.GetOrdinal("activo"))
+                            };
+                            usuarios.Add(usuario);
+                        }
+                    }
+                }
+            }
+            return usuarios;
+        }
+
+        public async Task<List<Usuario>> ObtenerTodosLosUsuarios()
+        {
+            List<Usuario> usuarios = new List<Usuario>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "SELECT * FROM usuario ORDER BY activo DESC, nombre ASC";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Usuario usuario = new Usuario
+                            {
+                                IdUsuario = reader.GetInt32(reader.GetOrdinal("id_usuario")),
+                                Nombre = reader.GetString(reader.GetOrdinal("nombre")),
+                                Correo = reader.GetString(reader.GetOrdinal("correo")),
+                                Password = reader.GetString(reader.GetOrdinal("password")),
+                                Rol = reader.GetString(reader.GetOrdinal("rol")),
+                                Activo = reader.GetBoolean(reader.GetOrdinal("activo"))
                             };
                             usuarios.Add(usuario);
                         }
@@ -64,11 +95,34 @@ namespace ContAsistencias.data
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                string query = "DELETE FROM usuario WHERE id_usuario = @id_usuario";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var tx = connection.BeginTransaction())
                 {
-                    command.Parameters.AddWithValue("@id_usuario", idUsuario);
-                    await command.ExecuteNonQueryAsync();
+                    try
+                    {
+                        using (SqlCommand command = connection.CreateCommand())
+                        {
+                            command.Transaction = tx;
+
+                            // 1) Eliminar asistencias del usuario
+                            command.CommandText = "DELETE FROM asistencias WHERE id_usuario = @id_usuario";
+                            command.Parameters.Clear();
+                            command.Parameters.AddWithValue("@id_usuario", idUsuario);
+                            await command.ExecuteNonQueryAsync();
+
+                            // 2) Marcar usuario como inactivo
+                            command.CommandText = "UPDATE usuario SET activo = 0 WHERE id_usuario = @id_usuario";
+                            command.Parameters.Clear();
+                            command.Parameters.AddWithValue("@id_usuario", idUsuario);
+                            await command.ExecuteNonQueryAsync();
+
+                            tx.Commit();
+                        }
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
                 }
             }
         }
@@ -96,7 +150,7 @@ namespace ContAsistencias.data
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                string query = "SELECT id_usuario, nombre, correo, password, rol FROM usuario WHERE correo = @correo AND password = @password";
+                string query = "SELECT id_usuario, nombre, correo, password, rol, activo FROM usuario WHERE correo = @correo AND password = @password AND activo = 1";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@correo", correo);
@@ -112,7 +166,8 @@ namespace ContAsistencias.data
                                 Nombre = reader.GetString(reader.GetOrdinal("nombre")),
                                 Correo = reader.GetString(reader.GetOrdinal("correo")),
                                 Password = reader.GetString(reader.GetOrdinal("password")),
-                                Rol = reader.GetString(reader.GetOrdinal("rol"))
+                                Rol = reader.GetString(reader.GetOrdinal("rol")),
+                                Activo = reader.GetBoolean(reader.GetOrdinal("activo"))
                             };
                         }
                     }
@@ -126,6 +181,95 @@ namespace ContAsistencias.data
         {
             Usuario? usuario = await ValidarUsuarioAsync(correo, password);
             return usuario?.Rol;
+        }
+
+        public async Task ReactivarUsuario(int idUsuario)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "UPDATE usuario SET activo = 1 WHERE id_usuario = @id_usuario";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id_usuario", idUsuario);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task<List<Usuario>> ObtenerUsuariosInactivos()
+        {
+            List<Usuario> usuarios = new List<Usuario>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "SELECT * FROM usuario WHERE activo = 0";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Usuario usuario = new Usuario
+                            {
+                                IdUsuario = reader.GetInt32(reader.GetOrdinal("id_usuario")),
+                                Nombre = reader.GetString(reader.GetOrdinal("nombre")),
+                                Correo = reader.GetString(reader.GetOrdinal("correo")),
+                                Password = reader.GetString(reader.GetOrdinal("password")),
+                                Rol = reader.GetString(reader.GetOrdinal("rol")),
+                                Activo = reader.GetBoolean(reader.GetOrdinal("activo"))
+                            };
+                            usuarios.Add(usuario);
+                        }
+                    }
+                }
+            }
+            return usuarios;
+        }
+
+        public async Task<Usuario?> ObtenerUsuarioPorId(int idUsuario)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "SELECT * FROM usuario WHERE id_usuario = @id_usuario";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id_usuario", idUsuario);
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Usuario
+                            {
+                                IdUsuario = reader.GetInt32(reader.GetOrdinal("id_usuario")),
+                                Nombre = reader.GetString(reader.GetOrdinal("nombre")),
+                                Correo = reader.GetString(reader.GetOrdinal("correo")),
+                                Password = reader.GetString(reader.GetOrdinal("password")),
+                                Rol = reader.GetString(reader.GetOrdinal("rol")),
+                                Activo = reader.GetBoolean(reader.GetOrdinal("activo"))
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public async Task CambiarEstadoActivo(int idUsuario, int activo)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "UPDATE usuario SET activo = @activo WHERE id_usuario = @id_usuario";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id_usuario", idUsuario);
+                    command.Parameters.AddWithValue("@activo", activo);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
         }
     }
 }
